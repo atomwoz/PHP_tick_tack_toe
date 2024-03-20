@@ -1,5 +1,4 @@
-#container
-{
+#container {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
@@ -9,9 +8,12 @@
 #grid {
     margin-top: 100px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Set up 3 columns with equal width */
-    grid-gap: 10px; /* Add gap between grid items */
-    width: 170px; /* Adjust width to fit the grid items */
+    grid-template-columns: repeat(3, 1fr);
+    /* Set up 3 columns with equal width */
+    grid-gap: 10px;
+    /* Add gap between grid items */
+    width: 170px;
+    /* Adjust width to fit the grid items */
     box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
@@ -22,14 +24,18 @@
     height: 50px;
     box-sizing: border-box;
     border: 1px solid black;
-    display: flex; /* Add flex display to center content */
-    justify-content: center; /* Center content horizontally */
-    align-items: center; /* Center content vertically */
-    font-size: 24px; /* Adjust font size for tick-tack-toe symbols */
+    display: flex;
+    /* Add flex display to center content */
+    justify-content: center;
+    /* Center content horizontally */
+    align-items: center;
+    /* Center content vertically */
+    font-size: 24px;
+    /* Adjust font size for tick-tack-toe symbols */
+    cursor: pointer;
 }
 
-.field:hover
-{
+.field:hover {
     background-color: gray;
     cursor: pointer;
 }

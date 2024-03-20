@@ -4,18 +4,18 @@ $("#init").style.display = "none"
 const API_URL = "/api/game.php"
 const INITIAL_URL = "/api/choose.php"
 const STATUS_URL = "/api/game_state.php"
+const HELLO_URL = "/api/hello.php"
 
 let myPlayer = ""
+let winner = ""
 let gameState = {
-    game: {
-        board: [
-            ["", "", ""],
-            ["", "", ""],
-            ["", "", ""]
-        ],
-        winner: null,
-        turn: false
-    }
+    board: [
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""]
+    ],
+    turn: false
+
 }
 
 function choose(X) {
@@ -31,18 +31,12 @@ function choose(X) {
 }
 
 function hello() {
-    fetch(API_URL).then(response => {
+    fetch(HELLO_URL).then(response => {
         if (!response.ok) {
             throw new Error("HTTP error " + response.status)
         }
         return response.text()
     }).then(data => {
-        if (data == "CHOOSE") {
-            $("#init").style.display = "block"
-        }
-        else {
-            myPlayer = data
-        }
         renderGame()
     }).catch(err => {
         console.error(err)
@@ -50,12 +44,18 @@ function hello() {
     })
 }
 
+function clickCell(i, j) {
+    if (gameState.board[i][j] != "") return
+    if (gameState.turn != myPlayer) return
+    commitGameState({ i, j })
+}
+
 function renderGame() {
-    const game = gameState.game
+    const game = gameState
+    console.log(myPlayer, JSON.stringify(game, null, 5))
 
-
-    if (game.winner) {
-        $("#game h1").innerHTML = `Winner: ${game.winner}`
+    if (winner) {
+        $("#game h1").innerHTML = `Winner: ${winner}`
         $("#game").style.display = "none"
     } else {
         $("#game h1").innerHTML = ""
@@ -71,10 +71,14 @@ function renderGame() {
         }
     }
 
-    if (game.myTurn) {
+    if (game.turn == myPlayer) {
         $("#game").style.pointerEvents = "auto"
+        $("#game h2").innerHTML = "Twój ruch"
+        $(".field").style.cursor = "pointer"
     } else {
         $("#game").style.pointerEvents = "none"
+        $("#game h2").innerHTML = "Ruch przeciwnika"
+        $(".field").style.cursor = "not-allowed"
     }
 
     if (myPlayer == "") {
@@ -97,7 +101,7 @@ function commitGameState(X) {
         },
         body: JSON.stringify(X)
     }).then(response => response.json()).then(data => {
-        gameState = data
+        gameState.game = data
         renderGame()
     })
 }
@@ -110,21 +114,17 @@ setInterval(() => {
         })
     }
 
-}, 100)
+}, 300)
 setInterval(() => {
     if (myPlayer == "") {
-        fetch(STATUS_URL).then(response => response.text()).then(data => {
-            if (parseInt(data) > 0) {
-                fetch(INITIAL_URL + "?choice=O").then(response => response.text()).then(data => {
-                    if (myPlayer == "") {
-                        myPlayer = data
-                        renderGame()
-                    }
-                })
-            }
-
+        fetch(INITIAL_URL).then(response => response.text()).then(data => {
+            if (data == "NO_CHOICE") return
+            myPlayer = data
+            renderGame()
         })
     }
 
-}, 100)
+
+
+}, 300)
 hello()
