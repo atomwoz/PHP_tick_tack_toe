@@ -1,6 +1,8 @@
 $("#game").style.display = "none"
 $("#init").style.display = "none"
 
+const API_URL = "/api/game.php"
+
 let myPlayer = ""
 let gameState = {
     game: {
@@ -19,7 +21,7 @@ function choose(X) {
 }
 
 function hello() {
-    fetch("/game.php").then(response => {
+    fetch(API_URL).then(response => {
         if (!response.ok) {
             throw new Error("HTTP error " + response.status)
         }
@@ -69,7 +71,7 @@ function renderGame() {
 }
 
 function commitGameState(X) {
-    fetch("/game.php", {
+    fetch(API_URL, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -83,7 +85,7 @@ function commitGameState(X) {
 
 setInterval(() => {
     if (myPlayer != "") {
-        fetch("/game.php").then(response => response.json()).then(data => {
+        fetch(API_URL).then(response => response.json()).then(data => {
             gameState = data
             renderGame()
         })
