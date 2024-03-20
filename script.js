@@ -2,6 +2,8 @@ $("#game").style.display = "none"
 $("#init").style.display = "none"
 
 const API_URL = "/api/game.php"
+const INITIAL_URL = "/api/choose.php"
+const STATUS_URL = "/api/game_state.php"
 
 let myPlayer = ""
 let gameState = {
@@ -12,12 +14,20 @@ let gameState = {
             ["", "", ""]
         ],
         winner: null,
-        myTurn: false
+        turn: false
     }
 }
 
 function choose(X) {
-    commitGameState({ choose: X })
+    fetch(INITIAL_URL + "?choice=" + X, {
+        method: "GET",
+        headers: {
+            "Content-Type": "text/plain"
+        }
+    }).then(response => response.text()).then(data => {
+        myPlayer = data
+        renderGame()
+    })
 }
 
 function hello() {
@@ -25,8 +35,8 @@ function hello() {
         if (!response.ok) {
             throw new Error("HTTP error " + response.status)
         }
-        return response.text() 
-        }).then(data => {
+        return response.text()
+    }).then(data => {
         if (data == "CHOOSE") {
             $("#init").style.display = "block"
         }
@@ -36,12 +46,13 @@ function hello() {
         renderGame()
     }).catch(err => {
         console.error(err)
-        setTimeout( () => alert("Nie udało się połączyć z serwerem"), 30)
+        setTimeout(() => alert("Nie udało się połączyć z serwerem"), 30)
     })
 }
 
 function renderGame() {
     const game = gameState.game
+
 
     if (game.winner) {
         $("#game h1").innerHTML = `Winner: ${game.winner}`
@@ -50,7 +61,7 @@ function renderGame() {
         $("#game h1").innerHTML = ""
     }
 
-    $("$game h1").innerHTML = "Ty jesteś: " + myPlayer
+    $("#game h1").innerHTML = "Ty jesteś: " + myPlayer
 
 
     for (let i = 0; i < 3; i++) {
@@ -66,7 +77,15 @@ function renderGame() {
         $("#game").style.pointerEvents = "none"
     }
 
-    $("#game").style.display = "block"
+    if (myPlayer == "") {
+        $("#game").style.display = "none"
+        $("#init").style.display = "block"
+    }
+    else {
+        $("#init").style.display = "none"
+        $("#game").style.display = "block"
+    }
+
 
 }
 
@@ -88,6 +107,22 @@ setInterval(() => {
         fetch(API_URL).then(response => response.json()).then(data => {
             gameState = data
             renderGame()
+        })
+    }
+
+}, 100)
+setInterval(() => {
+    if (myPlayer == "") {
+        fetch(STATUS_URL).then(response => response.text()).then(data => {
+            if (parseInt(data) > 0) {
+                fetch(INITIAL_URL + "?choice=O").then(response => response.text()).then(data => {
+                    if (myPlayer == "") {
+                        myPlayer = data
+                        renderGame()
+                    }
+                })
+            }
+
         })
     }
 
