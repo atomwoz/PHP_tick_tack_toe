@@ -39,3 +39,21 @@
     background-color: gray;
     cursor: pointer;
 }
+
+#end {
+    display: none;
+    /* Hide the end message by default */
+    position: fixed;
+    /* Position the end message in the center of the screen */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid black;
+    z-index: 1;
+    width: 200px;
+    height: 100px;
+    text-align: center;
+    /* Ensure the end message is on top of other elements */
+}

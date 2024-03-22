@@ -47,8 +47,9 @@ if ($body != null) {
         echo "It's not your turn";
         exit();
     }
-    //Win check here,calc sums of rows,cols,diagonals
-    $winner = null
+    
+    $winner = null;
+    //Win check here,calc sums of rows,cols,diagonals, and check for draw
     for($i = 0; $i < 3; $i++){
         $row_sum = 0;
         $col_sum = 0;
@@ -59,6 +60,32 @@ if ($body != null) {
         if($row_sum == 3 || $col_sum == 3){
             $winner = $_SESSION['choice'];
             break;
+        }
+    }
+    if($winner == null){
+        $diag1_sum = 0;
+        $diag2_sum = 0;
+        for($i = 0; $i < 3; $i++){
+            $diag1_sum += $status["board"][$i][$i] == $_SESSION['choice'] ? 1 : 0;
+            $diag2_sum += $status["board"][$i][2-$i] == $_SESSION['choice'] ? 1 : 0;
+        }
+        if($diag1_sum == 3 || $diag2_sum == 3){
+            $winner = $_SESSION['choice'];
+        }
+    }
+    //Check for draw
+    if($winner == null){
+        $draw = true;
+        for($i = 0; $i < 3; $i++){
+            for($j = 0; $j < 3; $j++){
+                if($status["board"][$i][$j] == "_"){
+                    $draw = false;
+                    break;
+                }
+            }
+        }
+        if($draw){
+            $winner = "DRAW";
         }
     }
     $memcached -> set('winner', $winner);

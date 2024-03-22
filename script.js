@@ -5,6 +5,7 @@ const API_URL = "/api/game.php"
 const INITIAL_URL = "/api/choose.php"
 const STATUS_URL = "/api/game_state.php"
 const HELLO_URL = "/api/hello.php"
+const WIN_URL = "/api/win.php"
 
 let myPlayer = ""
 let winner = ""
@@ -48,6 +49,16 @@ function clickCell(i, j) {
     if (gameState.board[i][j] != "_") return
     if (gameState.turn != myPlayer) return
     commitGameState({ i: parseInt(i), j: parseInt(j) })
+}
+
+function showWin() {
+    $("#end").style.display = "block"
+    if (winner == "DRAW") {
+        $("#end h1").innerHTML = "Remis"
+    }
+    else {
+        $("#end h1").innerHTML = "Wygrał: " + winner
+    }
 }
 
 function renderGame() {
@@ -140,5 +151,22 @@ setInterval(() => {
 
 
 
+}, 1000)
+setInterval(() => {
+    fetch(WIN_URL).then(response => response.text()).then(data => {
+        if (data == "NO_WIN") {
+            winner = ""
+            return
+        }
+        if (data == "DRAW") {
+            winner = "DRAW"
+        }
+        else {
+            winner = data
+        }
+        showWin()
+
+
+    })
 }, 1000)
 hello()
