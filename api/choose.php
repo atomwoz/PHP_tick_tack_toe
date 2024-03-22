@@ -26,7 +26,7 @@ if (isset($_GET['choice']) && !empty($_GET['choice'])) {
     $_SESSION['choice'] = $mysymbol;
     $debug_info .= "Choice is set to (snd) " . $mysymbol . "<br/>";
   }
-  $memcached->set('debug', $debug_info);
+  //$memcached->set('debug', $debug_info);
 } else {
   $remaining_symbol = $memcached->get('choice');
   if($remaining_symbol != 'X' && $remaining_symbol != 'O'){
@@ -37,7 +37,7 @@ if (isset($_GET['choice']) && !empty($_GET['choice'])) {
     $memcached -> delete('board');
     $_SESSION['choice'] = $mysymbol;
     $debug_info .= "Choice is set to (pooling)" . $mysymbol . "<br/>";
-    $memcached->set('debug', $debug_info);
+    //$memcached->set('debug', $debug_info);
 }
 echo $_SESSION['choice'];
 ?>

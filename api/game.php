@@ -23,7 +23,18 @@ if ($status == null) {
 $body = file_get_contents('php://input');
 if ($body != null) {
     $json = json_decode($body, true);
-    if($status["turn"] == $_SESSION['choice']){
+    //$memcached->set('debug', $json . " " . $body . " " . $status["turn"] . " " . $_SESSION['choice']);
+    if($status["board"][$json["i"]][$json["j"]] != "_"){
+        http_response_code(400);
+        echo "Field is already taken";
+        exit();
+    }
+    if(!isset($_SESSION["choice"])){
+        http_response_code(400);
+        echo "Invalid bearer";
+        exit();
+    }
+    if($status["turn"] == $_SESSION["choice"]){
         //Set X,O to field specified in "i", "j" in json
         $status["board"][$json["i"]][$json["j"]] = $_SESSION['choice'];
         $status["turn"] = $_SESSION['choice'] == 'X' ? 'O' : 'X';

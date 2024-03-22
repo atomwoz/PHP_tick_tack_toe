@@ -108,13 +108,17 @@ function commitGameState(X) {
 
 setInterval(() => {
     if (myPlayer != "") {
-        fetch(API_URL).then(response => response.json()).then(data => {
+        //Decode json from slashes to normal json ex. \" -> "
+        fetch(API_URL).then(response => response.text()).then(data => {
+            data = data.replace(/\\/g, "")
+            data = data.substring(1, data.length - 1)
+            data = JSON.parse(data)
             gameState = data
             renderGame()
         })
     }
 
-}, 300)
+}, 1000)
 setInterval(() => {
     if (myPlayer == "") {
         fetch(INITIAL_URL).then(response => response.text()).then(data => {
@@ -126,5 +130,5 @@ setInterval(() => {
 
 
 
-}, 300)
+}, 1000)
 hello()
