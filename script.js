@@ -45,9 +45,9 @@ function hello() {
 }
 
 function clickCell(i, j) {
-    if (gameState.board[i][j] != "") return
+    if (gameState.board[i][j] != "_") return
     if (gameState.turn != myPlayer) return
-    commitGameState({ i, j })
+    commitGameState({ i: parseInt(i), j: parseInt(j) })
 }
 
 function renderGame() {
@@ -72,11 +72,11 @@ function renderGame() {
     }
 
     if (game.turn == myPlayer) {
-        $("#game").style.pointerEvents = "auto"
+        //$("#game").style.pointerEvents = "auto"
         $("#game h2").innerHTML = "Twój ruch"
         $(".field").style.cursor = "pointer"
     } else {
-        $("#game").style.pointerEvents = "none"
+        //$("#game").style.pointerEvents = "none"
         $("#game h2").innerHTML = "Ruch przeciwnika"
         $(".field").style.cursor = "not-allowed"
     }
@@ -94,6 +94,7 @@ function renderGame() {
 }
 
 function commitGameState(X) {
+    console.log("commitGameState: ", X)
     fetch(API_URL, {
         method: "POST",
         headers: {
@@ -110,8 +111,17 @@ setInterval(() => {
     if (myPlayer != "") {
         //Decode json from slashes to normal json ex. \" -> "
         fetch(API_URL).then(response => response.text()).then(data => {
+            data = data.trim()
+            if (data.startsWith("\"")) {
+                data = data.substring(1, data.length - 1)
+            }
+            if (data.endsWith("\"")) {
+                data = data.substring(0, data.length - 1)
+            }
+            if (!data.startsWith("{")) data = "{" + data
+            if (!data.endsWith("}")) data += "}"
+
             data = data.replace(/\\/g, "")
-            data = data.substring(1, data.length - 1)
             data = JSON.parse(data)
             gameState = data
             renderGame()
